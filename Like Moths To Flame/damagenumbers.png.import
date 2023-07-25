@@ -1,0 +1,26 @@
+[remap]
+
+importer="2d_array_texture"
+type="CompressedTexture2DArray"
+uid="uid://cmlst3mu2l7ij"
+path="res://.godot/imported/damagenumbers.png-95a6263196ce82c7776d5e8dc8ab0614.ctexarray"
+metadata={
+"vram_texture": false
+}
+
+[deps]
+
+source_file="res://damagenumbers.png"
+dest_files=["res://.godot/imported/damagenumbers.png-95a6263196ce82c7776d5e8dc8ab0614.ctexarray"]
+
+[params]
+
+compress/mode=0
+compress/high_quality=false
+compress/lossy_quality=0.7
+compress/hdr_compression=1
+compress/channel_pack=0
+mipmaps/generate=true
+mipmaps/limit=0
+slices/horizontal=3
+slices/vertical=4

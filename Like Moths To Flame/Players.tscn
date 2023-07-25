@@ -1,0 +1,93 @@
+[gd_scene load_steps=8 format=3 uid="uid://ltmix41kirrb"]
+
+[ext_resource type="Script" path="res://Player1.gd" id="1_ao4eb"]
+[ext_resource type="Script" path="res://Player2.gd" id="1_d3hxs"]
+[ext_resource type="Script" path="res://Players.gd" id="1_etl4v"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jfee4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3380n"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8b5bp"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3dabv"]
+size = Vector2(85, 20)
+
+[node name="Players" type="Node2D"]
+script = ExtResource("1_etl4v")
+
+[node name="Player1Parent" type="Node2D" parent="."]
+
+[node name="WeaponHit" type="RayCast2D" parent="Player1Parent"]
+position = Vector2(3.05176e-05, -20)
+target_position = Vector2(2000, 0)
+collision_mask = 14
+
+[node name="Player1" type="CharacterBody2D" parent="Player1Parent"]
+position = Vector2(0, -20)
+collision_mask = 12
+slide_on_ceiling = false
+script = ExtResource("1_ao4eb")
+
+[node name="hitbox" type="CollisionShape2D" parent="Player1Parent/Player1"]
+shape = SubResource("RectangleShape2D_jfee4")
+
+[node name="TempCamera" type="Camera2D" parent="Player1Parent/Player1"]
+
+[node name="ReviveBox" type="Area2D" parent="Player1Parent/Player1"]
+scale = Vector2(2, 2)
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player1Parent/Player1/ReviveBox"]
+shape = SubResource("RectangleShape2D_3380n")
+disabled = true
+
+[node name="Player2Parent" type="Node2D" parent="."]
+
+[node name="Player2" type="CharacterBody2D" parent="Player2Parent"]
+position = Vector2(0, 20)
+collision_mask = 12
+slide_on_ceiling = false
+script = ExtResource("1_d3hxs")
+
+[node name="hitbox" type="CollisionShape2D" parent="Player2Parent/Player2"]
+shape = SubResource("RectangleShape2D_jfee4")
+
+[node name="ReviveBox" type="Area2D" parent="Player2Parent/Player2"]
+scale = Vector2(2, 2)
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player2Parent/Player2/ReviveBox"]
+shape = SubResource("RectangleShape2D_3380n")
+disabled = true
+
+[node name="MeleeWeapon" type="Node2D" parent="Player2Parent/Player2"]
+
+[node name="MeleeHitboxTip" type="Area2D" parent="Player2Parent/Player2/MeleeWeapon"]
+position = Vector2(-1.70474e-06, 39)
+rotation = 1.5708
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player2Parent/Player2/MeleeWeapon/MeleeHitboxTip"]
+scale = Vector2(0.25, 0.25)
+shape = SubResource("RectangleShape2D_8b5bp")
+disabled = true
+
+[node name="MeleeHitboxBase" type="Area2D" parent="Player2Parent/Player2/MeleeWeapon"]
+rotation = 1.5708
+scale = Vector2(0.5, 0.5)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player2Parent/Player2/MeleeWeapon/MeleeHitboxBase"]
+position = Vector2(32.5, 0)
+shape = SubResource("RectangleShape2D_3dabv")
+disabled = true
+
+[connection signal="body_entered" from="Player1Parent/Player1/ReviveBox" to="Player1Parent/Player1" method="_on_revive_box_body_entered"]
+[connection signal="body_exited" from="Player1Parent/Player1/ReviveBox" to="Player1Parent/Player1" method="_on_revive_box_body_exited"]
+[connection signal="body_entered" from="Player2Parent/Player2/ReviveBox" to="Player2Parent/Player2" method="_on_revive_box_body_entered"]
+[connection signal="body_exited" from="Player2Parent/Player2/ReviveBox" to="Player2Parent/Player2" method="_on_revive_box_body_exited"]
+[connection signal="body_entered" from="Player2Parent/Player2/MeleeWeapon/MeleeHitboxTip" to="Player2Parent/Player2" method="_on_melee_hitbox_tip_body_entered"]
+[connection signal="body_entered" from="Player2Parent/Player2/MeleeWeapon/MeleeHitboxBase" to="Player2Parent/Player2" method="_on_melee_hitbox_base_body_entered"]

@@ -1,0 +1,38 @@
+[gd_scene load_steps=4 format=3 uid="uid://ckvsl5kwd27nk"]
+
+[ext_resource type="Script" path="res://TestMeleeEnemy.gd" id="1_8f1mu"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_buu6s"]
+radius = 8.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8s2e5"]
+
+[node name="MeleeEnemyTest" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 12
+slide_on_ceiling = false
+script = ExtResource("1_8f1mu")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_buu6s")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+debug_enabled = true
+
+[node name="VisionCone" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 9
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="VisionCone"]
+scale = Vector2(1.93281, 0.809375)
+polygon = PackedVector2Array(0, 0, 300, -600, 300, 600)
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("RectangleShape2D_8s2e5")
+
+[connection signal="body_entered" from="VisionCone" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="VisionCone" to="." method="_on_area_2d_body_exited"]
+[connection signal="body_entered" from="Hurtbox" to="." method="_on_hurtbox_body_entered"]
