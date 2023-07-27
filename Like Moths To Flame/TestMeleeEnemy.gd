@@ -102,7 +102,6 @@ func _physics_process(delta):
 			velocity += ($NavigationAgent2D.get_target_position() - self.get_position()).normalized() * speed
 			velocity.x = lerp(velocity.x,0.0,0.2)
 			velocity.y = lerp(velocity.y,0.0,0.2)
-			print("a")
 		if attention <= 0 and $NavigationAgent2D.is_navigation_finished() == true and takingkb == false:
 			target = null
 			state = "wander"
@@ -158,38 +157,40 @@ func CanSee(NodeToCheck):
 func _on_hurtbox_body_entered(body):
 	if active == true:
 		if body is CharacterBody2D:
-			if body.get_parent().get_parent().has_method("take_damage"):
+			if body.has_method("take_damage"):
 				if body.reviveimmunity == 0:
 					if body.get_parent().get_parent().embers <= 0:
 						body.state = "downed"
-					body.get_parent().get_parent().take_damage(enemydamage)
+					var enemypos = self.get_global_position()
+					body.take_damage(enemydamage,enemypos)
 					print(enemydamage)
-					#player knockback here
-					#like seriously thats important you need to do that
-					#get off your ass 
-					#body.velocity = -body.velocity
 
 func get_hit(damage,knockback,Playerpoint,collisionpoint):
 	if active == true:
-		print(collisionpoint - self.get_global_position())
 		takingkb = true
-		var dirtolaunchCall = self.get_global_position() - Playerpoint
-		var dirtolaunch = Vector2.ZERO
-		if dirtolaunchCall.x > 0:
-			dirtolaunch.x = 1
-		elif dirtolaunchCall.x < 0:
-			dirtolaunch.x = -1
-		else: dirtolaunch.x = 0
-		if dirtolaunchCall.y > 0:
-			dirtolaunch.y = 1
-		elif dirtolaunchCall.y < 0:
-			dirtolaunch.y = -1
-		else: dirtolaunch.y = 0
-		print(dirtolaunch)
-		if collisionpoint != Vector2.ZERO:
-			velocity = dirtolaunch * knockback
-		else:
-			velocity = dirtolaunch * knockback
+		var kbtoapply = Vector2(1,1)
+		var midpoint:float
+		var percenttomidpoint:float
+		var angletolaunch = atan2(self.get_global_position().y - Playerpoint.y,self.get_global_position().x - Playerpoint.x)
+		if angletolaunch <= PI and angletolaunch >= PI/2:
+			midpoint = (3 * PI)/4 
+			percenttomidpoint = (angletolaunch - midpoint)/(PI/4) * 100
+			kbtoapply.x = -kbtoapply.x
+		elif angletolaunch >= -PI and angletolaunch <= -PI/2:
+			midpoint = -(3 * PI)/4 
+			percenttomidpoint = (angletolaunch - midpoint)/(-PI/4) * 100
+			kbtoapply.x = -kbtoapply.x
+			kbtoapply.y = -kbtoapply.y
+		elif angletolaunch <= 0 and angletolaunch >= -PI/2:
+			midpoint = -PI/4
+			percenttomidpoint = (angletolaunch - midpoint)/(PI/4)*100
+			kbtoapply.y = -kbtoapply.y
+		elif angletolaunch >= 0 and angletolaunch <= PI/2:
+			midpoint = PI/4
+			percenttomidpoint = (angletolaunch - midpoint)/(PI/4)*100
+		kbtoapply.x *= 100 - percenttomidpoint
+		kbtoapply.y *= 100 + percenttomidpoint
+		velocity = kbtoapply
 		stundur = 0.3
 		health -= damage
 		var text = damagenumbers.instantiate()

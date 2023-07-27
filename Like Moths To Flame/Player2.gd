@@ -11,7 +11,7 @@ var ignitestrength = 6
 var igniteduration = 3
 var damage = 20
 var swingduration:float = 0.3
-
+var kbduration = 0.2
 var state = "normal"
 
 var canberevived = false
@@ -55,7 +55,6 @@ func _physics_process(delta):
 				currentDirection = "up"
 		else:
 			velocity.y = lerp(velocity.y,0.0,0.2)
-		move_and_slide()
 		if embers <= 0:
 			state = "vulnerable"
 		if Input.is_action_just_pressed("p2attack") and currentswingduration <= 0:
@@ -92,7 +91,14 @@ func _physics_process(delta):
 				$hitbox.disabled = false
 				$ReviveBox/CollisionShape2D.disabled = true
 				reviveimmunity = 1.5
-
+	if state == "knockedback":
+		kbduration -= delta
+		if kbduration < 0:
+			kbduration = 0
+			if embers > 0:
+				state = "normal"
+			elif embers == 0: state = "vulnerable"
+	move_and_slide()
 func _on_revive_box_body_entered(body):
 	if body is CharacterBody2D:
 		canberevived = true
@@ -103,15 +109,11 @@ func _on_revive_box_body_exited(body):
 
 
 
-
-
 func _on_melee_hitbox_base_body_entered(body):
 	if body is CharacterBody2D:
 		if body.has_method("get_hit"):
 			var Playerpoint = self.get_global_position()
 			body.get_hit(damage,knockback,Playerpoint,collisionpoint)
-
-
 func _on_melee_hitbox_tip_body_entered(body):
 	if body is CharacterBody2D:
 		if body.has_method("ignite"):
@@ -129,3 +131,36 @@ func swing(dir):
 		if dir.y == 0:
 			attackdirection = 1
 	currentswingduration = swingduration
+
+func take_damage(enemydamage,enemypos):
+
+	var kbtoapply = Vector2(1,1)
+	var midpoint:float
+	var percenttomidpoint:float
+	var angletolaunch = atan2(self.get_global_position().y - enemypos.y,self.get_global_position().x - enemypos.x)
+	if angletolaunch <= PI and angletolaunch >= PI/2:
+		midpoint = (3 * PI)/4 
+		percenttomidpoint = (angletolaunch - midpoint)/(PI/4) * 100
+		kbtoapply.x = -kbtoapply.x
+	elif angletolaunch >= -PI and angletolaunch <= -PI/2:
+		midpoint = -(3 * PI)/4 
+		percenttomidpoint = (angletolaunch - midpoint)/(-PI/4) * 100
+		kbtoapply.x = -kbtoapply.x
+		kbtoapply.y = -kbtoapply.y
+	elif angletolaunch <= 0 and angletolaunch >= -PI/2:
+		midpoint = -PI/4
+		percenttomidpoint = (angletolaunch - midpoint)/(PI/4)*100
+		kbtoapply.y = -kbtoapply.y
+	elif angletolaunch >= 0 and angletolaunch <= PI/2:
+		midpoint = PI/4
+		percenttomidpoint = (angletolaunch - midpoint)/(PI/4)*100
+	kbtoapply.x *= 100 - percenttomidpoint
+	kbtoapply.y *= 100 + percenttomidpoint
+	print(kbtoapply)
+	velocity = kbtoapply * 2
+	if state != "downed":
+		state = "knockedback"
+		kbduration = 0.2
+	get_parent().get_parent().embers -= enemydamage
+	if get_parent().get_parent().embers < 0:
+		get_parent().get_parent().embers = 0
