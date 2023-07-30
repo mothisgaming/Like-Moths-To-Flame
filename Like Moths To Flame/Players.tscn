@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://ltmix41kirrb"]
+[gd_scene load_steps=9 format=3 uid="uid://ltmix41kirrb"]
 
 [ext_resource type="Script" path="res://Player1.gd" id="1_ao4eb"]
 [ext_resource type="Script" path="res://Player2.gd" id="1_d3hxs"]
 [ext_resource type="Script" path="res://Players.gd" id="1_etl4v"]
+[ext_resource type="Texture2D" uid="uid://jrrlpoybm1nd" path="res://icon.svg" id="3_6j5x8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jfee4"]
 
@@ -41,6 +42,11 @@ collision_layer = 0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player1Parent/Player1/ReviveBox"]
 shape = SubResource("RectangleShape2D_3380n")
 disabled = true
+
+[node name="Sprite2D" type="Sprite2D" parent="Player1Parent/Player1"]
+position = Vector2(0, 0.25)
+scale = Vector2(0.15625, 0.160156)
+texture = ExtResource("3_6j5x8")
 
 [node name="Player2Parent" type="Node2D" parent="."]
 
@@ -84,6 +90,11 @@ collision_mask = 2
 position = Vector2(32.5, 0)
 shape = SubResource("RectangleShape2D_3dabv")
 disabled = true
+
+[node name="Sprite2D" type="Sprite2D" parent="Player2Parent/Player2"]
+position = Vector2(0, 0.25)
+scale = Vector2(0.15625, 0.160156)
+texture = ExtResource("3_6j5x8")
 
 [connection signal="body_entered" from="Player1Parent/Player1/ReviveBox" to="Player1Parent/Player1" method="_on_revive_box_body_entered"]
 [connection signal="body_exited" from="Player1Parent/Player1/ReviveBox" to="Player1Parent/Player1" method="_on_revive_box_body_exited"]

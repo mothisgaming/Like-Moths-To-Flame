@@ -158,7 +158,7 @@ func _on_hurtbox_body_entered(body):
 	if active == true:
 		if body is CharacterBody2D:
 			if body.has_method("take_damage"):
-				if body.reviveimmunity == 0:
+				if body.reviveimmunity == 0 and body.state != "downed":
 					if body.get_parent().get_parent().embers <= 0:
 						body.state = "downed"
 					var enemypos = self.get_global_position()
@@ -190,7 +190,7 @@ func get_hit(damage,knockback,Playerpoint,collisionpoint):
 			percenttomidpoint = (angletolaunch - midpoint)/(PI/4)*100
 		kbtoapply.x *= 100 - percenttomidpoint
 		kbtoapply.y *= 100 + percenttomidpoint
-		velocity = kbtoapply
+		velocity = kbtoapply * knockback
 		stundur = 0.3
 		health -= damage
 		var text = damagenumbers.instantiate()

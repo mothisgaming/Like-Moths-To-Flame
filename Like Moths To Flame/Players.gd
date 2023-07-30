@@ -1,6 +1,6 @@
 extends Node2D
 
-var defaultmaxembers = 100000000
+var defaultmaxembers = 100
 var embers = defaultmaxembers
 
 

@@ -2,17 +2,17 @@ extends CharacterBody2D
 
 var playerID = 2
 
-@export var speed = 200
+var speed = Global.speed
 var tempspeed = speed
-var totalvel = 200
-var accel = 50
-var knockback = 300
-var ignitestrength = 6
-var igniteduration = 3
-var damage = 20
-var swingduration:float = 0.3
+var accel = speed/4
+var knockback = 1.2
+var ignitestrength = Global.IgniteDamage
+var igniteduration = Global.IgniteDuration
+var damage = Global.MeleeDamage
+var swingduration:float = Global.swingspeed
 var kbduration = 0.2
 var state = "normal"
+
 
 var canberevived = false
 var revivetimer = 1
@@ -43,8 +43,6 @@ func _physics_process(delta):
 			currentDirection ="left"
 			velocity.x = max(velocity.x - accel, -tempspeed)
 			tempspeed = speed
-		else:
-			velocity.x = lerp(velocity.x,0.0,0.2)
 		if Input.is_action_pressed("P2down"):
 			velocity.y = min(velocity.y + accel, tempspeed)
 			if dir.x == 0:
@@ -53,11 +51,9 @@ func _physics_process(delta):
 			velocity.y = max(velocity.y - accel, -tempspeed)
 			if dir.x == 0:
 				currentDirection = "up"
-		else:
-			velocity.y = lerp(velocity.y,0.0,0.2)
 		if embers <= 0:
 			state = "vulnerable"
-		if Input.is_action_just_pressed("p2attack") and currentswingduration <= 0:
+		if Input.is_action_pressed("p2attack") and currentswingduration <= 0:
 			swing(dir)
 
 		if currentswingduration > 0:
@@ -98,6 +94,8 @@ func _physics_process(delta):
 			if embers > 0:
 				state = "normal"
 			elif embers == 0: state = "vulnerable"
+	velocity.x = lerp(velocity.x,0.0,0.2)
+	velocity.y = lerp(velocity.y,0.0,0.2)
 	move_and_slide()
 func _on_revive_box_body_entered(body):
 	if body is CharacterBody2D:
@@ -157,8 +155,8 @@ func take_damage(enemydamage,enemypos):
 	kbtoapply.x *= 100 - percenttomidpoint
 	kbtoapply.y *= 100 + percenttomidpoint
 	print(kbtoapply)
-	velocity = kbtoapply * 2
 	if state != "downed":
+		velocity = kbtoapply * 2
 		state = "knockedback"
 		kbduration = 0.2
 	get_parent().get_parent().embers -= enemydamage

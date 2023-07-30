@@ -1,3 +1,6 @@
-[gd_scene format=3 uid="uid://nmgs1oe5r2ww"]
+[gd_scene load_steps=2 format=3 uid="uid://nmgs1oe5r2ww"]
+
+[ext_resource type="Script" path="res://GlobalVarStorage.gd" id="1_svvxc"]
 
 [node name="Node" type="Node"]
+script = ExtResource("1_svvxc")

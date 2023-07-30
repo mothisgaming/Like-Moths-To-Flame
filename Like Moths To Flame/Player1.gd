@@ -2,9 +2,9 @@ extends CharacterBody2D
 
 
 #speed
-@export var speed = 200
+@export var speed = Global.speed
 var tempspeed = speed
-var accel = 50
+var accel = speed/4
 
 var playerID = 1
 var state = "normal"
@@ -13,9 +13,9 @@ var revivetimer = 3
 var reviveimmunity = 0
 var kbduration = 0.2
 #weaponstats
-var bulletdamage = 20
-var firedelay = 0
-var knockback = 60
+var bulletdamage = Global.GunDamage
+var firedelay:float
+var knockback = 0.4
 
 func _physics_process(delta):
 	var embers = get_parent().get_parent().embers
@@ -38,15 +38,11 @@ func _physics_process(delta):
 
 			velocity.x = max(velocity.x - accel, -tempspeed)
 			tempspeed = speed
-		else:
-			velocity.x = lerp(velocity.x,0.0,0.2)
 		if Input.is_action_pressed("P1down"):
 			velocity.y = min(velocity.y + accel, tempspeed)
 		elif Input.is_action_pressed("P1up"):
 			velocity.y = max(velocity.y - accel, -tempspeed)
-		else:
-			velocity.y = lerp(velocity.y,0.0,0.2)
-		
+		move_and_slide()
 		if embers <= 0:
 			state = "vulnerable"
 		get_parent().get_node("WeaponHit").set_rotation(self.get_angle_to(get_global_mouse_position()))
@@ -82,6 +78,9 @@ func _physics_process(delta):
 			if embers > 0:
 				state = "normal"
 			elif embers == 0: state = "vulnerable"
+			
+	velocity.x = lerp(velocity.x,0.0,0.2)
+	velocity.y = lerp(velocity.y,0.0,0.2)
 	move_and_slide()
 func _on_revive_box_body_entered(body):
 	if body is CharacterBody2D:
@@ -100,20 +99,24 @@ func take_damage(enemydamage,enemypos):
 	if angletolaunch <= PI and angletolaunch >= PI/2:
 		midpoint = (3 * PI)/4 
 		percenttomidpoint = (angletolaunch - midpoint)/(PI/4) * 100
+		kbtoapply.x = -kbtoapply.x
 	elif angletolaunch >= -PI and angletolaunch <= -PI/2:
 		midpoint = -(3 * PI)/4 
 		percenttomidpoint = (angletolaunch - midpoint)/(-PI/4) * 100
+		kbtoapply.x = -kbtoapply.x
+		kbtoapply.y = -kbtoapply.y
 	elif angletolaunch <= 0 and angletolaunch >= -PI/2:
 		midpoint = -PI/4
 		percenttomidpoint = (angletolaunch - midpoint)/(PI/4)*100
+		kbtoapply.y = -kbtoapply.y
 	elif angletolaunch >= 0 and angletolaunch <= PI/2:
 		midpoint = PI/4
 		percenttomidpoint = (angletolaunch - midpoint)/(PI/4)*100
 	kbtoapply.x *= 100 - percenttomidpoint
 	kbtoapply.y *= 100 + percenttomidpoint
 	print(kbtoapply)
-	velocity = kbtoapply * 2
 	if state != "downed":
+		velocity = kbtoapply * 2
 		state = "knockedback"
 		kbduration = 0.2
 	get_parent().get_parent().embers -= enemydamage
@@ -127,4 +130,4 @@ func shoot():
 		if collider.has_method("get_hit"):
 			var Playerpoint = self.get_global_position()
 			collider.get_hit(bulletdamage, knockback,Playerpoint,collisionpoint)
-	firedelay = 0.2
+	firedelay = Global.FireDelay
